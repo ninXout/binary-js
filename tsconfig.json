@@ -3,15 +3,17 @@
     "target": "es2019",
     "module": "commonjs",
     "moduleResolution": "node",
+    "outDir": "./dist",
+    "rootDir": "./src",
     "declaration": true,
     "declarationMap": true,
-    "outDir": "./dist",
     "strict": true,
     "esModuleInterop": true,
     "skipLibCheck": true,
     "forceConsistentCasingInFileNames": true,
-    "types": ["jest", "node"]
+    "types": ["jest", "node"],
+    "removeComments": true
   },
-  "include": ["./src/**/*.ts", "./tests/**/*.ts"],
-  "exclude": ["node_modules"]
+  "include": ["src/**/*.ts"],
+  "exclude": ["node_modules", "tests"]
 }
