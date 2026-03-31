@@ -1,5 +1,5 @@
 {
-  "name": "binary",
+  "name": "cerealized",
   "version": "1.0.0",
   "description": "Easy and clean binary serialization and deserialization in typescript",
   "main": "dist/index.js",
