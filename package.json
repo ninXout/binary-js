@@ -4,9 +4,7 @@
   "description": "Easy and clean binary serialization and deserialization in typescript",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
-  "files": [
-    "/dist"
-  ],
+  "files": ["dist"],
   "scripts": {
     "build": "tsc",
     "test": "jest",
