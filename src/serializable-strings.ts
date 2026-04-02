@@ -1,7 +1,7 @@
 import { SmartBuffer } from "smart-buffer";
 import { FieldType, Serializable } from "./serializable"
 
-export class String extends FieldType<string> {
+export class SString extends FieldType<string> {
     private underlying: string = ""
 
     getSize(): number {

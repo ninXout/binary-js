@@ -1,17 +1,17 @@
 import { field, Serializable } from "../src";
 import { SArray, SMap, SVector } from "../src/serializable-arrays";
-import { UInt32LE, UInt8 } from "../src/serializable-numbers";
-import { String } from "../src/serializable-strings";
+import { SUInt32LE, SUInt8 } from "../src/serializable-numbers";
+import { SString } from "../src/serializable-strings";
 
 class Packet extends Serializable {
-    @field(UInt32LE) packetID = 0
+    @field(SUInt32LE) packetID = 0
 }
 
 class MovePacket extends Packet {
-    @field(UInt8) percent = 0
-    @field(String) str = "thing"
-    @field(SVector.of(UInt8)) arr = [0, 1, 2, 3, 4]
-    @field(SMap.of(UInt8, UInt8)) map = new Map<number, number>().set(0, 1)
+    @field(SUInt8) percent = 0
+    @field(SString) str = "thing"
+    @field(SVector.of(SUInt8)) arr = [0, 1, 2, 3, 4]
+    @field(SMap.of(SUInt8, SUInt8)) map = new Map<number, number>().set(0, 1)
 }
 
 test('Simple serialization tests', () => {

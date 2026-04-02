@@ -1,7 +1,22 @@
 import { SmartBuffer } from "smart-buffer";
 import { FieldType, Serializable } from "./serializable"
 
-export class UInt8 extends FieldType<number> {
+export class SBoolean extends FieldType<boolean> {
+    getSize(): number {
+        return 1
+    }
+
+    write(view: SmartBuffer, offset: number, value: boolean): number {
+        view.writeUInt8(value ? 1 : 0, offset)
+        return 1
+    }
+
+    read(view: SmartBuffer, offset: number): { value: boolean; bytesRead: number } {
+        return { value: view.readUInt8(offset) ? true : false, bytesRead: 1 }
+    }
+}
+
+export class SUInt8 extends FieldType<number> {
     getSize(): number {
         return 1
     }
@@ -16,7 +31,7 @@ export class UInt8 extends FieldType<number> {
     }
 }
 
-export class UInt16LE extends FieldType<number> {
+export class SUInt16LE extends FieldType<number> {
     getSize(): number {
         return 2
     }
@@ -31,7 +46,7 @@ export class UInt16LE extends FieldType<number> {
     }
 }
 
-export class UInt32LE extends FieldType<number> {
+export class SUInt32LE extends FieldType<number> {
     getSize(): number {
         return 4
     }
@@ -46,7 +61,7 @@ export class UInt32LE extends FieldType<number> {
     }
 }
 
-export class UInt64LE extends FieldType<bigint> {
+export class SUInt64LE extends FieldType<bigint> {
     getSize(): number {
         return 8
     }
