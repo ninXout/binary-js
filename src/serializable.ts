@@ -17,7 +17,7 @@ export type FieldTypeCtor = new () => FieldType
 
 export type SerializableCtor<T extends Serializable = any> = {
     new (): T
-    deserialize(buffer: ArrayBuffer): T
+    deserialize(buffer: Buffer): T
 }
 
 export class SerializableField<T extends Serializable> extends FieldType<T> {
@@ -45,7 +45,7 @@ export class SerializableField<T extends Serializable> extends FieldType<T> {
         const full = view.toBuffer()
         const slice = full.subarray(offset)
 
-        const value = this.ctor.deserialize(slice.buffer as ArrayBuffer)
+        const value = this.ctor.deserialize(Buffer.from(slice.buffer))
 
         const size = value.serialize().byteLength
         this.lastSize = size
@@ -58,11 +58,11 @@ export class SerializableField<T extends Serializable> extends FieldType<T> {
 }
 
 export function resolveFieldType(type: FieldTypeCtor | SerializableCtor): FieldType {
-    if (type.prototype instanceof FieldType) {
+    if (FieldType.prototype.isPrototypeOf(type.prototype)) {
         return new (type as FieldTypeCtor)()
     }
 
-    if (type.prototype instanceof Serializable) {
+    if (Serializable.prototype.isPrototypeOf(type.prototype)) {
         return new SerializableField(type as SerializableCtor)
     }
 
@@ -84,9 +84,9 @@ export function field(type: FieldTypeCtor | SerializableCtor) {
 
             let instance: FieldType
 
-            if (type.prototype instanceof FieldType) {
+            if (FieldType.prototype.isPrototypeOf(type.prototype)) {
                 instance = new (type as FieldTypeCtor)()
-            } else if (type.prototype instanceof Serializable) {
+            } else if (Serializable.prototype.isPrototypeOf(type.prototype)) {
                 instance = new SerializableField(type as SerializableCtor)
             } else {
                 throw new Error("Invalid field type")

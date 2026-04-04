@@ -14,6 +14,10 @@ class MovePacket extends Packet {
     @field(SMap.of(SUInt8, SUInt8)) map = new Map<number, number>().set(0, 1)
 }
 
+class PacketHolder extends Serializable {
+    @field(MovePacket) pack = new MovePacket()
+}
+
 test('Simple serialization tests', () => {
     const testID = 89273
 
@@ -46,4 +50,13 @@ test('String tests', () => {
     const moveDeserial = MovePacket.deserialize(moveSerial)
 
     expect(move.str).toBe(moveDeserial.str)
+})
+
+test('Custom fields tests', () => {
+    let holder = new PacketHolder();
+
+    const holderSerial = holder.serialize();
+    const holderDeserial = PacketHolder.deserialize(holderSerial)
+
+    expect(holder.pack.percent).toBe(holderDeserial.pack.percent)
 })
