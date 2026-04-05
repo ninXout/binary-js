@@ -45,7 +45,7 @@ export class SerializableField<T extends Serializable> extends FieldType<T> {
         const full = view.toBuffer()
         const slice = full.subarray(offset)
 
-        const value = this.ctor.deserialize(Buffer.from(slice.buffer))
+        const value = this.ctor.deserialize(slice)
 
         const size = value.serialize().byteLength
         this.lastSize = size
