@@ -17,7 +17,7 @@ class MovePacket extends Packet {
 
 class PacketHolder extends Serializable {
     @field(SUInt32LE) percent = 0
-    @field(SArray.of(MovePacket, 1)) pack = [new MovePacket()]
+    @field(SVector.of(MovePacket)) pack = [new MovePacket()]
 }
 
 test('Simple serialization tests', () => {
