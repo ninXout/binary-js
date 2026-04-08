@@ -8,12 +8,12 @@ export abstract class FieldType<T = any> {
 
 export type FieldMetadata = {
     key: string
-    type: FieldType
+    type: FieldType<any>
 }
 
 const fieldMetadataKey = Symbol("fields")
 
-export type FieldTypeCtor = new () => FieldType
+export type FieldTypeCtor<T = any> = new () => FieldType<T>
 
 export type SerializableCtor<T extends Serializable = any> = {
     new (): T
@@ -57,13 +57,15 @@ export class SerializableField<T extends Serializable> extends FieldType<T> {
     }
 }
 
-export function resolveFieldType(type: FieldTypeCtor | SerializableCtor): FieldType {
+export function resolveFieldType<T>(
+    type: FieldTypeCtor<T> | SerializableCtor<any>
+): FieldType<T> {
     if (FieldType.prototype.isPrototypeOf(type.prototype)) {
-        return new (type as FieldTypeCtor)()
+        return new (type as FieldTypeCtor<T>)()
     }
 
     if (Serializable.prototype.isPrototypeOf(type.prototype)) {
-        return new SerializableField(type as SerializableCtor)
+        return new SerializableField(type as SerializableCtor<any>) as FieldType<T>
     }
 
     throw new Error("Invalid field type")
@@ -82,15 +84,7 @@ export function field(type: FieldTypeCtor | SerializableCtor) {
 
             const fields = ctor[fieldMetadataKey]
 
-            let instance: FieldType
-
-            if (FieldType.prototype.isPrototypeOf(type.prototype)) {
-                instance = new (type as FieldTypeCtor)()
-            } else if (Serializable.prototype.isPrototypeOf(type.prototype)) {
-                instance = new SerializableField(type as SerializableCtor)
-            } else {
-                throw new Error("Invalid field type")
-            }
+            const instance = resolveFieldType(type)
 
             if (!fields.some((f: FieldMetadata) => f.key === key)) {
                 fields.push({ key, type: instance })

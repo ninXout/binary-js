@@ -17,7 +17,7 @@ class MovePacket extends Packet {
 
 class PacketHolder extends Serializable {
     @field(SUInt32LE) percent = 0
-    @field(MovePacket) pack = new MovePacket()
+    @field(SArray.of(MovePacket, 1)) pack = [new MovePacket()]
 }
 
 test('Simple serialization tests', () => {
@@ -60,5 +60,5 @@ test('Custom fields tests', () => {
     const holderSerial = holder.serialize();
     const holderDeserial = PacketHolder.deserialize(holderSerial)
 
-    expect(holder.pack.percent).toBe(holderDeserial.pack.percent)
+    expect(holder.pack[0].percent).toBe(holderDeserial.pack[0].percent)
 })

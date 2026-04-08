@@ -1,18 +1,26 @@
-import { FieldType, resolveFieldType, FieldTypeCtor } from "./serializable";
+import { FieldType, resolveFieldType, FieldTypeCtor, SerializableCtor } from "./serializable";
 import { SmartBuffer } from "smart-buffer";
 
+type InferField<T> =
+    T extends FieldTypeCtor<infer U> ? U :
+    T extends SerializableCtor<infer U> ? U :
+    never;
+
 export class SArray<T = any> extends FieldType<T[]> {
-    elementType: FieldType;
+    elementType: FieldType<T>;
     length: number;
 
-    constructor(type: FieldTypeCtor, length: number) {
+    constructor(type: any, length: number) {
         super();
         this.elementType = resolveFieldType(type);
         this.length = length;
     }
 
-    static of(type: FieldTypeCtor, length: number) {
-        return class extends SArray {
+    static of<TCtor extends FieldTypeCtor<any> | SerializableCtor<any>>(
+        type: TCtor,
+        length: number
+    ): new () => SArray<InferField<TCtor>> {
+        return class extends SArray<InferField<TCtor>> {
             constructor() {
                 super(type, length);
             }
@@ -25,11 +33,9 @@ export class SArray<T = any> extends FieldType<T[]> {
 
     write(view: SmartBuffer, offset: number, value: T[]): number {
         let bytes = 0;
-
         for (let i = 0; i < this.length; i++) {
             bytes += this.elementType.write(view, offset + bytes, value[i]);
         }
-
         return bytes;
     }
 
@@ -48,15 +54,17 @@ export class SArray<T = any> extends FieldType<T[]> {
 }
 
 export class SVector<T = any> extends FieldType<T[]> {
-    elementType: FieldType;
+    elementType: FieldType<T>;
 
-    constructor(type: FieldTypeCtor) {
+    constructor(type: any) {
         super();
         this.elementType = resolveFieldType(type);
     }
 
-    static of(type: FieldTypeCtor) {
-        return class extends SVector {
+    static of<TCtor extends FieldTypeCtor<any> | SerializableCtor<any>>(
+        type: TCtor
+    ): new () => SVector<InferField<TCtor>> {
+        return class extends SVector<InferField<TCtor>> {
             constructor() {
                 super(type);
             }
@@ -64,7 +72,6 @@ export class SVector<T = any> extends FieldType<T[]> {
     }
 
     getSize(): number {
-        // dynamic sized, this is unreliable
         return 0;
     }
 
@@ -100,17 +107,26 @@ export class SVector<T = any> extends FieldType<T[]> {
 }
 
 export class SMap<K = any, V = any> extends FieldType<Map<K, V>> {
-    keyType: FieldType;
-    valueType: FieldType;
+    keyType: FieldType<K>;
+    valueType: FieldType<V>;
 
-    constructor(keyType: FieldTypeCtor, valueType: FieldTypeCtor) {
+    constructor(keyType: any, valueType: any) {
         super();
         this.keyType = resolveFieldType(keyType);
         this.valueType = resolveFieldType(valueType);
     }
 
-    static of(keyType: FieldTypeCtor, valueType: FieldTypeCtor) {
-        return class extends SMap {
+    static of<
+        KCtor extends FieldTypeCtor<any> | SerializableCtor<any>,
+        VCtor extends FieldTypeCtor<any> | SerializableCtor<any>
+    >(
+        keyType: KCtor,
+        valueType: VCtor
+    ): new () => SMap<InferField<KCtor>, InferField<VCtor>> {
+        return class extends SMap<
+            InferField<KCtor>,
+            InferField<VCtor>
+        > {
             constructor() {
                 super(keyType, valueType);
             }
@@ -118,7 +134,6 @@ export class SMap<K = any, V = any> extends FieldType<Map<K, V>> {
     }
 
     getSize(): number {
-        // dynamic sized, this is unreliable
         return 0;
     }
 
