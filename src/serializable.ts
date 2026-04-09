@@ -18,6 +18,7 @@ export type FieldTypeCtor<T = any> = new () => FieldType<T>
 export type SerializableCtor<T extends Serializable = any> = {
     new (): T
     deserialize(buffer: Buffer): T
+    from(data: Partial<T>): T
 }
 
 export class SerializableField<T extends Serializable> extends FieldType<T> {
@@ -54,6 +55,11 @@ export class SerializableField<T extends Serializable> extends FieldType<T> {
             value,
             bytesRead: size
         }
+    }
+
+    createFrom(data: any): T {
+        if (data instanceof this.ctor) return data
+        return this.ctor.from(data)
     }
 }
 
@@ -138,6 +144,37 @@ export abstract class Serializable {
             ;(instance as any)[field.key] = value
 
             offset += bytesRead
+        }
+
+        return instance
+    }
+
+    static from<T extends Serializable>(
+        this: new () => T,
+        data?: Partial<T>
+    ): T {
+        const instance = new this()
+        
+        if (data) {
+            const fields = getAllFields(this)
+
+            for (const field of fields) {
+                if (!(field.key in data)) continue
+
+                let value = (data as any)[field.key]
+
+                if (field.type instanceof SerializableField) {
+                    value = field.type.createFrom(value)
+                }
+
+                ;(instance as any)[field.key] = value
+            }
+
+            for (const key of Object.keys(data)) {
+                if (!fields.some(f => f.key === key)) {
+                    throw new Error(`Unknown field: ${key}`)
+                }
+            }
         }
 
         return instance
