@@ -85,31 +85,26 @@ export function field(type: FieldTypeCtor | SerializableCtor) {
             const ctor = (this as any).constructor
 
             if (!Object.prototype.hasOwnProperty.call(ctor, fieldMetadataKey)) {
-                ctor[fieldMetadataKey] = []
+                const parent = Object.getPrototypeOf(ctor)
+                ctor[fieldMetadataKey] = parent?.[fieldMetadataKey]
+                    ? [...parent[fieldMetadataKey]]
+                    : []
             }
 
-            const fields = ctor[fieldMetadataKey]
+            const fields: FieldMetadata[] = ctor[fieldMetadataKey]
 
-            const instance = resolveFieldType(type)
+            if (fields.some(f => f.key === key)) return
 
-            if (!fields.some((f: FieldMetadata) => f.key === key)) {
-                fields.push({ key, type: instance })
-            }
+            fields.push({
+                key,
+                type: resolveFieldType(type)
+            })
         })
     }
 }
 
 function getAllFields(ctor: any): FieldMetadata[] {
-    const fields: FieldMetadata[] = []
-
-    while (ctor && ctor !== Object) {
-        if (ctor[fieldMetadataKey]) {
-            fields.unshift(...ctor[fieldMetadataKey])
-        }
-        ctor = Object.getPrototypeOf(ctor)
-    }
-
-    return fields
+    return ctor[fieldMetadataKey] ?? []
 }
 
 export abstract class Serializable {

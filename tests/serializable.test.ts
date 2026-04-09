@@ -15,6 +15,10 @@ class MovePacket extends Packet {
     @field(SMap.of(SUInt8, SUInt8)) map = new Map<number, number>().set(0, 1)
 }
 
+class BadMovePacket extends MovePacket {
+
+}
+
 class PacketHolder extends Serializable {
     @field(SUInt32LE) percent = 0
     @field(SVector.of(MovePacket)) pack = [ MovePacket.from({ percent: 1 }) ]
@@ -46,12 +50,12 @@ test('Inheritance tests', () => {
 })
 
 test('String tests', () => {
-    let move = new MovePacket();
+    let move = new BadMovePacket();
     
     const moveSerial = move.serialize();
-    const moveDeserial = MovePacket.deserialize(moveSerial)
+    //const moveDeserial = BadMovePacket.deserialize(moveSerial)
 
-    expect(move.str).toBe(moveDeserial.str)
+    expect(moveSerial).toEqual(new MovePacket().serialize())
 })
 
 test('Custom fields tests', () => {
