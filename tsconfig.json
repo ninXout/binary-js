@@ -1,20 +1,16 @@
 {
   "compilerOptions": {
     "target": "es2019",
-    "module": "commonjs",
-    "moduleResolution": "node10",
-    "outDir": "./dist",
-    "rootDir": "./",
-    "declaration": true,
-    "declarationMap": true,
+    "module": "nodenext",
+    "moduleResolution": "nodenext",
     "strict": true,
     "isolatedModules": true,
     "esModuleInterop": true,
     "skipLibCheck": true,
     "forceConsistentCasingInFileNames": true,
+    "removeComments": true,
     "types": ["jest", "node"],
-    "removeComments": true
+    "noEmit": true
   },
-  "include": ["src/**/*.ts", "tests/*.ts"],
-  "exclude": ["node_modules"]
+  "include": ["src/**/*.ts", "tests/**/*.ts"]
 }
