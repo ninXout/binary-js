@@ -169,12 +169,6 @@ export abstract class Serializable {
 
                 ;(instance as any)[field.key] = value
             }
-
-            for (const key of Object.keys(data)) {
-                if (!fields.some(f => f.key === key)) {
-                    throw new Error(`Unknown field: ${key}`)
-                }
-            }
         }
 
         return instance
