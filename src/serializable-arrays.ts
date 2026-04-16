@@ -78,8 +78,8 @@ export class SVector<T = any> extends FieldType<T[]> {
     write(view: SmartBuffer, offset: number, value: T[]): number {
         let bytes = 0;
 
-        view.writeUInt32LE(value.length, offset + bytes);
-        bytes += 4;
+        view.writeUInt16LE(value.length, offset + bytes);
+        bytes += 2;
 
         for (const item of value) {
             bytes += this.elementType.write(view, offset + bytes, item);
@@ -91,8 +91,8 @@ export class SVector<T = any> extends FieldType<T[]> {
     read(view: SmartBuffer, offset: number) {
         let bytes = 0;
 
-        const length = view.readUInt32LE(offset + bytes);
-        bytes += 4;
+        const length = view.readUInt16LE(offset + bytes);
+        bytes += 2;
 
         const result: T[] = [];
 
@@ -140,8 +140,8 @@ export class SMap<K = any, V = any> extends FieldType<Map<K, V>> {
     write(view: SmartBuffer, offset: number, value: Map<K, V>): number {
         let bytes = 0;
 
-        view.writeUInt32LE(value.size, offset + bytes);
-        bytes += 4;
+        view.writeUInt16LE(value.size, offset + bytes);
+        bytes += 2;
 
         for (const [key, val] of value.entries()) {
             bytes += this.keyType.write(view, offset + bytes, key);
@@ -154,8 +154,8 @@ export class SMap<K = any, V = any> extends FieldType<Map<K, V>> {
     read(view: SmartBuffer, offset: number) {
         let bytes = 0;
 
-        const size = view.readUInt32LE(offset + bytes);
-        bytes += 4;
+        const size = view.readUInt16LE(offset + bytes);
+        bytes += 2;
 
         const result = new Map<K, V>();
 
